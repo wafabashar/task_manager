@@ -1,0 +1,195 @@
+﻿@model vmtask
+@{
+    Paging paging = new Paging();
+    int pageno = 0;
+
+    if (ViewBag.paging != null)
+    {
+        paging = ViewBag.paging;
+        pageno = paging.Currentpage;
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Tasks</title>
+    <link href="~/twitter-bootstrap/css/bootstrap.css" rel="stylesheet" />
+
+    <script src="~/twitter-bootstrap/js/bootstrap.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+</head>
+<body style="background-color:lightgray">
+
+    <form method="post">
+
+        <div class="container">
+
+            <div class="row" style="margin-top:10px">
+                <div class="col-lg-2">
+                    <h3>Tasks</h3>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+                <div class="col-lg-2">
+                    <span>Task to find..</span>
+                </div>
+
+                <div class="col-lg-2">
+                    <span>Project:</span>
+                </div>
+
+                <div class="col-lg-2">
+                    <span>Added_by:</span>
+                </div>
+
+                <div class="col-lg-2">
+                    <span>Completed:</span>
+                </div>
+
+            </div>
+
+            <div class="row" style="margin-top:5px">
+                <div class="col-lg-2">
+                    <input type="text" class="form-control" name="Searchtxt" />
+                </div>
+
+                <div class="col-lg-2">
+                    <select class="form-control" name="ddlp" asp-items='new SelectList(Model.liproject,"id","project_name")'>
+                        <option value="0">Choose any one </option>
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <select class="form-control" name="ddlu" asp-items='new SelectList(Model.liuser,"id","first_name")'>
+                        <option value="0">Choose any one </option>
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <input type="radio" value="All" name="completedcheck"/>All
+                    <input type="radio" value="Yes" name="completedcheck" />Yes
+                    <input type="radio" value="No" name="completedcheck" />No
+
+                </div>
+
+                <div class="col-lg-2">
+                    <input type="submit" value="Search" class="btn btn-primary" asp-action="Search" />
+                </div>
+
+
+            </div>
+
+            <div class="row" style="margin-top:10px">
+                <table class="table table-bordered table-hover table-striped" style="border:1px black solid">
+
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>task</th>
+                            <th>Added_Date</th>
+                            <th>Completed</th>
+                            <th>Project_name</th>
+                            <th>Added_by</th>
+                            <th><input type="checkbox" /></th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach(task item in Model.litask) {
+                        <tr>
+                            <td>@item.id</td>
+                            <td>@item.Task</td>
+                            <td>@item.added_date</td>
+                            <td>
+                                @if (item.completed == false)
+                                {
+                                    <span>No</span>
+
+                                }
+                                else
+                                {
+                                    <span>Yes</span>
+                                }
+                            </td>
+                            <td>@item.Propject.project_name</td>
+                            <td>@item.User.first_name</td>
+                            <td>
+                                @if (item.completed == false)
+                                {
+
+                                <input type="checkbox" />
+                                }
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row" >
+
+                <div class="col-lg-2">
+                    <input type="submit" value="Save As Completed" class="btn btn-primary" />
+                </div>
+                <div class="col-lg-6">
+
+
+                    @if (paging.TotalPages > 0)
+                    {
+
+
+                    <ul class="pagination justify-content-end">
+
+                        @if (paging.Currentpage >1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Task" asp-action="Load_Tasks" asp-route-p=""1">First</a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Task" asp-action="Load_Tasks" asp-route-p="@(paging.Currentpage-1)">Previous</a>
+                            </li>
+
+                        }
+
+                        @for (var pa = paging.StartPage; pa <= paging.EndPage; pa++)
+                        {
+                            <li class="page-item @(pa==paging.Currentpage? "active":"")">
+                                <a class="page-link" asp-controller="Task" asp-action="Load_Tasks" asp-route-p="@pa">@pa</a>
+                            </li>
+
+                        }
+
+                        @if (paging.Currentpage < paging.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Task" asp-action="Load_Tasks" asp-route-p="@(paging.Currentpage+1)">Next</a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" asp-controller="Task" asp-action="Load_Tasks" asp-route-p="@(paging.TotalPages)">Last</a>
+                            </li>
+
+                        }
+                    </ul>
+                    }
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+
+   
+
+</body>
+</html>
